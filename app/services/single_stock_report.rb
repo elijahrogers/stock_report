@@ -15,21 +15,27 @@ class SingleStockReport < Prawn::Document
 
   def initialize(ticker_sym)
     super()
-    @ticker = ticker_sym.upcase
-    yahoo_client = YahooFinance::Client.new
-    @data = yahoo_client.quotes(["#{@ticker}"], [:name, :ask, :bid, :last_trade_price, :open, :close, :pe_ratio, :earnings_per_share, :average_daily_volume, :volume, :change, :high_52_weeks, :low_52_weeks, :moving_average_200_day,
-     :moving_average_50_day, :market_capitalization, :price_per_book, :price_per_sales, :dividend_yield ])
-    @graph_data = yahoo_client.historical_quotes("#{@ticker}", { start_date: Time::now-(24*60*60*10), end_date: Time::now })
     init_pdf
+    @tickers = ticker_sym.upcase.split(',')
+    yahoo_client = YahooFinance::Client.new
+    @tickers.each_with_index do |ticker, index|
+      if index > 0 && index < @tickers.count
+        start_new_page
+      end
+      @ticker = ticker
+      @data = yahoo_client.quotes(["#{ticker}"], [:name, :ask, :bid, :last_trade_price, :open, :close, :pe_ratio, :earnings_per_share, :average_daily_volume, :volume, :change, :high_52_weeks, :low_52_weeks, :moving_average_200_day,
+       :moving_average_50_day, :market_capitalization, :price_per_book, :price_per_sales, :dividend_yield ])
+      @graph_data = yahoo_client.historical_quotes("#{ticker}", { start_date: Time::now-(24*60*60*10), end_date: Time::now })
+      draw_page
+    end
   end
 
   def init_pdf
     add_font_code_light
     add_font_awesome
-    draw_first_page
   end
 
-  def draw_first_page
+  def draw_page
     add_title
     add_stock_info
     add_stats
