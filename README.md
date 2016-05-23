@@ -11,9 +11,9 @@ This is a dynamic PDF generator utilizing Blake Campbell's [dynamic_pdfs](https:
 
 ## Valid Routes
 
-* http://localhost:3000/market_report
 * http://localhost:3000/stock_report/AAPL
   * Any ticker can be used
   * Tickers can be found at [Yahoo! Finance](http://finance.yahoo.com/lookup)
   * Multiple comma seperated tickers may be used to get reports for multiple companies in a single PDF
     * Example: http://localhost:3000/stock_report/AAPL,GOOG,FB
+* http://localhost:3000/market_report
