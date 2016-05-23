@@ -7,5 +7,12 @@ module Common
       }
       )
     end
+    def add_font_awesome
+      font_families.update( 'fa' =>
+      {
+        normal: "#{Rails.root}/public/fonts/fontawesome-webfont.ttf",
+      }
+      )
+    end
   end
 end

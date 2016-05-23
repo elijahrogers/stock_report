@@ -7,19 +7,17 @@ require 'open-uri'
 
 class MarketReport < Prawn::Document
   include Common::IncludeFont
-  include Common::CombinePdf
   include Common::ColorTheme
 
   def initialize(_data)
     super()
-    @template = "#{Rails.root}/app/pdf_templates/blank_pdf.pdf"
-    @page_num = 1
     yahoo_client = YahooFinance::Client.new
     @data = yahoo_client.quotes(["IYY","^GSPC","^IXIC","EURUSD=X","USDJPY=X","GBPUSD=X","USDCHF=X","^IRX","^FVX","^TNX","^TYX", "CLN16.NYM", "NGM16.NYM", "GCM16.CMX", "GC.CMX", "SI.CMX", "CN16.CBT", "KCK16.NYB"], [:name, :last_trade_price, :open, :close, :average_daily_volume, :volume, :change, :high_52_weeks, :low_52_weeks])
     @commodities_data = yahoo_client.quotes(["CLN16.NYM", "NGM16.NYM", "GCM16.CMX", "SI.CMX","HG.CMX", "CN16.CBT", "ON16.CBT", "KCK16.NYB", "CTN16.NYB", "SBN16.NYB"], [:name, :last_trade_price, :change])
     @dow_data = yahoo_client.historical_quotes( "IYY", { start_date: Time::now-(24*60*60*13), end_date: Time::now })
     @sp_data = yahoo_client.historical_quotes( "^GSPC", { start_date: Time::now-(24*60*60*13), end_date: Time::now })
     @nasdaq_data = yahoo_client.historical_quotes( "^IXIC", { start_date: Time::now-(24*60*60*13), end_date: Time::now })
+    init_pdf
   end
 
   private
@@ -51,8 +49,7 @@ class MarketReport < Prawn::Document
     number_pages string, options
     bounding_box([-35,725], :width => 610, :height => 20) do
       font "Code_Light"
-      font_size 18
-      text "Market Report: #{Time.now.strftime("%b %d, %Y")}", :align => :center, :character_spacing => 0.5
+      text "Market Report: #{Time.now.strftime("%b %d, %Y")}", :align => :center, :character_spacing => 0.5, :size => 18
     end
     move_down 10
     stroke_color "#56f649"
@@ -178,7 +175,7 @@ class MarketReport < Prawn::Document
   def add_arrow(change,x,y)
     bounding_box([x,y], :width => 20) do
       if change > 0
-        self.icon 'fa-chevron-up', size: 10, :color => "#17FF00"
+        self.icon 'fa-chevron-up', size: 10, :color => "17FF00"
       else
         self.icon 'fa-chevron-down', size: 10, :color => "FF0000"
       end
